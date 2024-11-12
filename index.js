@@ -18,8 +18,8 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.log(err));
 
-app.use('/api/students', studentRoutes); 
-app.use('/api/faculties', facultyRoutes);  
+app.use('/api', studentRoutes); 
+app.use('/api', facultyRoutes);  
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
