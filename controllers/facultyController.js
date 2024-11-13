@@ -1,5 +1,4 @@
 const Faculty = require('../models/Faculty');
-const Faculty = require('../models/Faculty');
 const csvParser = require('csv-parser');
 const fs = require('fs');
 
