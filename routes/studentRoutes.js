@@ -9,7 +9,6 @@ router.post('/students', createStudent);
 router.get('/students', getStudents);
 router.put('/students/:id', updateStudent);
 router.delete('/students/:id', deleteStudent);
-
 router.post('/students/bulk-upload', upload.single('file'), bulkUploadStudents);
 
 module.exports = router;
