@@ -1,24 +1,36 @@
 const Student = require('../models/Student');
-const csvParser = require('csv-parser');
 const fs = require('fs');
+const csv = require('csv-parser');
 
 exports.bulkUploadStudents = (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: 'No file uploaded' });
+  }
+
   const results = [];
-  
   fs.createReadStream(req.file.path)
-    .pipe(csvParser())
+    .pipe(csv())
     .on('data', (data) => results.push(data))
     .on('end', async () => {
       try {
-        const students = await Student.insertMany(results);
-        res.status(201).json({ message: 'Students uploaded successfully', students });
-      } 
-      catch (err) {
-        res.status(500).json({ message: 'Error uploading students', error: err.message });
-      } 
-      finally {
-        fs.unlinkSync(req.file.path);
+        const students = results.map((student) => ({
+          name: student.name,
+          email: student.email,
+          age: student.age,
+          course: student.course,
+        }));
+
+        await Student.insertMany(students);
+        fs.unlinkSync(req.file.path); // Clean up the uploaded file
+        res.json({ message: 'Student data uploaded successfully' });
+      } catch (err) {
+        console.error('Error inserting student data:', err);
+        res.status(500).json({ message: 'Error inserting student data' });
       }
+    })
+    .on('error', (err) => {
+      console.error('CSV parsing error:', err);
+      res.status(500).json({ message: 'Error parsing CSV file' });
     });
 };
 
