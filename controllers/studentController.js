@@ -1,4 +1,27 @@
 const Student = require('../models/Student');
+const csvParser = require('csv-parser');
+const fs = require('fs');
+
+exports.bulkUploadStudents = (req, res) => {
+  const results = [];
+  
+  fs.createReadStream(req.file.path)
+    .pipe(csvParser())
+    .on('data', (data) => results.push(data))
+    .on('end', async () => {
+      try {
+        const students = await Student.insertMany(results);
+        res.status(201).json({ message: 'Students uploaded successfully', students });
+      } 
+      catch (err) {
+        res.status(500).json({ message: 'Error uploading students', error: err.message });
+      } 
+      finally {
+        fs.unlinkSync(req.file.path);
+      }
+    });
+};
+
 
 exports.createStudent = async (req, res) => {
   try {

@@ -1,4 +1,28 @@
 const Faculty = require('../models/Faculty');
+const Faculty = require('../models/Faculty');
+const csvParser = require('csv-parser');
+const fs = require('fs');
+
+exports.bulkUploadFaculties = (req, res) => {
+  const results = [];
+  
+  fs.createReadStream(req.file.path)
+    .pipe(csvParser())
+    .on('data', (data) => results.push(data))
+    .on('end', async () => {
+      try {
+        const faculties = await Faculty.insertMany(results);
+        res.status(201).json({ message: 'Faculties uploaded successfully', faculties });
+      } 
+      catch (err) {
+        res.status(500).json({ message: 'Error uploading faculties', error: err.message });
+      } 
+      finally {
+        fs.unlinkSync(req.file.path);
+      }
+    });
+};
+
 
 exports.createFaculty = async (req, res) => {
   try {

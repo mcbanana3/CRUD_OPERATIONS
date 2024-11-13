@@ -5,6 +5,22 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const studentRoutes = require('./routes/studentRoutes');
 const facultyRoutes = require('./routes/facultyRoutes'); 
+const multer = require('multer');
+const csvParser = require('csv-parser');
+const fs = require('fs');
+const path = require('path');
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './uploads'); // Folder to save the uploaded files
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname)); // Naming the uploaded file
+  }
+});
+
+const upload = multer({ storage: storage });
+
 
 dotenv.config();
 
