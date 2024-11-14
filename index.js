@@ -25,7 +25,7 @@ dotenv.config();
 
 const app = express();
 app.use(cors({
-  origin: 'https://crud-operations-frontend-lmlv.onrender.com'  
+  origin: 'https://crud-operations-frontend-ten.vercel.app/'  
 }));
 app.use(bodyParser.json());
 
